@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>支付系统 API 对接文档 | 专业版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f0f2f5;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            line-height: 1.5;
+            color: #1e293b;
+            padding: 2rem 1.5rem;
+        }
+
+        /* 文档容器 */
+        .doc-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 28px;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        /* 头部 */
+        .doc-header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            padding: 2rem 2.5rem;
+            color: white;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .doc-header h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .doc-header h1::before {
+            content: "💳";
+            font-size: 2rem;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        .doc-header .version-badge {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(4px);
+            padding: 0.2rem 0.8rem;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            display: inline-block;
+            margin-top: 6px;
+        }
+
+        .doc-header .desc {
+            margin-top: 12px;
+            opacity: 0.85;
+            font-size: 0.95rem;
+            max-width: 80%;
+        }
+
+        /* 内容主体 */
+        .doc-body {
+            padding: 2rem 2.5rem;
+        }
+
+        /* 章节卡片 */
+        .section-card {
+            background: #ffffff;
+            border-radius: 20px;
+            margin-bottom: 2.2rem;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 4px 12px rgba(0,0,0,0.03);
+            border: 1px solid #eef2f6;
+            transition: box-shadow 0.2s;
+        }
+
+        .section-card:hover {
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .section-title {
+            padding: 1.2rem 1.8rem 0.6rem 1.8rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+            border-bottom: 2px solid #eef2f6;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #0f172a;
+        }
+
+        .section-title .icon {
+            font-size: 1.6rem;
+        }
+
+        .section-content {
+            padding: 1.2rem 1.8rem 1.8rem 1.8rem;
+        }
+
+        /* 信息块 */
+        .info-block {
+            background: #f8fafc;
+            border-left: 4px solid #3b82f6;
+            padding: 1rem 1.2rem;
+            border-radius: 14px;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        .endpoint {
+            background: #f1f5f9;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            padding: 0.6rem 1rem;
+            border-radius: 12px;
+            margin: 0.8rem 0;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #0c4a6e;
+            border: 1px solid #e2e8f0;
+        }
+
+        .method {
+            display: inline-block;
+            background: #10b981;
+            color: white;
+            font-weight: 600;
+            padding: 0.2rem 0.7rem;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            margin-right: 12px;
+            letter-spacing: 0.3px;
+        }
+
+        .method.post {
+            background: #3b82f6;
+        }
+
+        /* 表格样式 */
+        .api-table-wrapper {
+            overflow-x: auto;
+            margin: 1.2rem 0;
+            border-radius: 16px;
+            border: 1px solid #eef2f6;
+        }
+
+        .api-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            background: white;
+        }
+
+        .api-table th {
+            background: #f8fafc;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: #1e293b;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .api-table td {
+            padding: 10px 16px;
+            border-bottom: 1px solid #f0f2f5;
+            color: #334155;
+        }
+
+        .api-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .param-required {
+            color: #ef4444;
+            font-weight: 500;
+            background: #fee2e2;
+            padding: 2px 8px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            display: inline-block;
+        }
+
+        .param-optional {
+            background: #e6f0ff;
+            color: #2563eb;
+            padding: 2px 8px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            display: inline-block;
+        }
+
+        code {
+            background: #f1f5f9;
+            padding: 0.2rem 0.4rem;
+            border-radius: 8px;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.8rem;
+            color: #d946ef;
+        }
+
+        pre {
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 16px;
+            overflow-x: auto;
+            font-size: 0.8rem;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            margin: 1rem 0;
+            line-height: 1.45;
+        }
+
+        .sign-example {
+            background: #fef9e3;
+            border-left: 3px solid #f59e0b;
+            padding: 0.8rem 1rem;
+            border-radius: 12px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            margin: 1rem 0;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #eef2ff;
+            color: #1e40af;
+            padding: 2px 10px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        hr {
+            margin: 1.5rem 0;
+            border: none;
+            border-top: 1px solid #eef2f6;
+        }
+
+        .footer-note {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #5b6e8c;
+            border-top: 1px solid #eef2f6;
+            padding-top: 1.5rem;
+        }
+
+        @media (max-width: 680px) {
+            body {
+                padding: 1rem;
+            }
+            .doc-body {
+                padding: 1.2rem;
+            }
+            .section-title {
+                font-size: 1.2rem;
+                padding: 1rem 1.2rem;
+            }
+            .section-content {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="doc-container">
+    <div class="doc-header">
+        <h1>支付系统 API 对接文档</h1>
+        <div class="version-badge">Version 2.0 · 正式稳定版</div>
+        <div class="desc">统一支付网关接口规范 · 支持微信/支付宝 · 同步异步回调 · 安全签名机制</div>
+    </div>
+    <div class="doc-body">
+        
+        <!-- 概述 & 安全机制 -->
+        <div class="section-card">
+            <div class="section-title">
+                <span class="icon">🔐</span> 
+                <span>通用安全机制</span>
+            </div>
+            <div class="section-content">
+                <p><strong>通讯方式：</strong> HTTP POST / GET &nbsp;|&nbsp; <strong>数据格式：</strong> <code>application/x-www-form-urlencoded</code> &nbsp;|&nbsp; <strong>字符编码：</strong> UTF-8</p>
+                <div class="info-block">
+                    <strong>⚠️ 通讯密钥 (AppKey)</strong><br>
+                    每个商户拥有唯一通讯密钥，用于签名校验。请妥善保管，切勿泄露至前端或公开仓库。
+                </div>
+                <div class="info-block">
+                    <strong>🔏 签名算法 (MD5)</strong><br>
+                    大多数接口签名采用 <code>MD5(参数拼接字符串 + 通讯密钥)</code>，具体参数顺序以各接口说明为准。大小写敏感，生成32位小写MD5。
+                </div>
+                <div class="sign-example">
+                    📌 创建订单签名示例：<br>
+                    拼接原文：<code>1547129707139vone66620.1a7cc8678193ee9c70ae3d75fd04ae6a9</code><br>
+                    计算结果：<code>2b8b5d58c51203162f14939bdbc46a54</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- 1. 创建订单 -->
+        <div class="section-card">
+            <div class="section-title">
+                <span class="icon">📝</span>
+                <span>1. 创建订单</span>
+            </div>
+            <div class="section-content">
+                <div class="endpoint"><span class="method post">POST/GET</span> <code>/createOrder</code></div>
+                <p>生成支付订单，返回二维码链接或跳转支付页。</p>
+                
+                <div class="api-table-wrapper">
+                    <table class="api-table">
+                        <thead><tr><th>参数</th><th>类型</th><th>必填</th><th>说明</th></tr></thead>
+                        <tbody>
+                            <tr><td>payId</td><td>string</td><td><span class="param-required">必传</span></td><td>商户订单号，唯一（建议时间戳+随机）</td></tr>
+                            <tr><td>type</td><td>int</td><td><span class="param-required">必传</span></td><td>1=微信支付，2=支付宝支付</td></tr>
+                            <tr><td>price</td><td>float</td><td><span class="param-required">必传</span></td><td>订单金额（元）</td></tr>
+                            <tr><td>sign</td><td>string</td><td><span class="param-required">必传</span></td><td>签名：<code>md5(payId + param + type + price + 通讯密钥)</code></td></tr>
+                            <tr><td>param</td><td>string</td><td><span class="param-optional">可选</span></td><td>自定义参数，回调时原样返回</td></tr>
+                            <tr><td>isHtml</td><td>int</td><td><span class="param-optional">可选</span></td><td>1=自动跳转支付页面，0=返回JSON数据（默认）</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p><strong>✅ 成功响应示例</strong></p>
+                <pre>{
+  "code": 1,
+  "msg": "成功",
+  "data": {
+    "payId": "1547129707139",
+    "orderId": "201901102220147500",
+    "payType": 2,
+    "price": 0.1,
+    "reallyPrice": 0.1,
+    "payUrl": "HTTPS://QR.ALIPAY.COM/FKX03500Z2ZYWA0ELYUB5D",
+    "isAuto": 1,
+    "state": 0,
+    "timeOut": 5,
+    "date": 1547130014777
+  }
+}</pre>
+                <p><strong>📦 返回字段说明</strong></p>
+                <div class="api-table-wrapper">
+                    <table class="api-table">
+                        <thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead>
+                        <tbody>
+                            <tr><td>code</td><td>int</td><td>1成功，-1失败</td></tr>
+                            <tr><td>msg</td><td>string</td><td>提示信息</td></tr>
+                            <tr><td>data.orderId</td><td>string</td><td><strong>云端订单号</strong>（后续查询关键）</td></tr>
+                            <tr><td>data.payUrl</td><td>string</td><td>支付二维码内容（或链接）</td></tr>
+                            <tr><td>data.state</td><td>int</td><td>-1过期 0待支付 1完成 2支付完成通知失败</td></tr>
+                            <tr><td>data.timeOut</td><td>int</td><td>订单有效分钟数</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. 查询订单信息 -->
+        <div class="section-card">
+            <div class="section-title">
+                <span class="icon">🔍</span>
+                <span>2. 查询订单信息</span>
+            </div>
+            <div class="section-content">
+                <div class="endpoint"><span class="method post">POST/GET</span> <code>/getOrder</code></div>
+                <div class="api-table-wrapper">
+                    <table class="api-table">
+                        <thead><tr><th>参数</th><th>类型</th><th>必填</th><th>说明</th></tr></thead>
+                        <tbody>
+                            <tr><td>orderId</td><td>string</td><td><span class="param-required">必传</span></td><td>云端订单号（创建订单返回）</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p><strong>响应格式</strong> 同创建订单data结构，额外包含订单完整信息。</p>
+                <pre>{
+  "code": 1,
+  "msg": "成功",
+  "data": { "payId":"...", "orderId":"...", "state":0, "price":0.1, ... }
+}</pre>
+            </div>
+        </div>
+
+        <!-- 3. 查询订单支付状态 -->
+        <div class="section-card">
+            <div class="section-title">
+                <span class="icon">✅</span>
+                <span>3. 查询订单支付状态</span>
+            </div>
+            <div class="section-content">
+                <div class="endpoint"><span class="method post">POST/GET</span> <code>/checkOrder</code></div>
+                <div class="api-table-wrapper">
+                    <table class="api-table">
+                        <thead><tr><th>参数</th><th>类型</th><th>必填</th><th>说明</th></tr></thead>
+                        <tbody><tr><td>orderId</td><td>string</td><td><span class="param-required">必传</span></td><td>云端订单号</td></tr></tbody>
+                    </table>
+                </div>
+                <p><strong>已支付响应示例</strong></p>
+                <pre>{
+  "code": 1,
+  "msg": "成功",
+  "data": "https://yourdomain.com/callback?payId=xxx&param=xxx&type=2&price=0.1&reallyPrice=0.1&sign=xxx"
+}</pre>
+                <p><strong>字段说明：</strong> <code>code=1</code> 表示已支付，<code>data</code>为支付完成跳转地址（含回调参数）；<code>code=-1</code> 表示未支付或失败。</p>
+            </div>
+        </div>
+
+        <!-- 4. 关闭订单 -->
+        <div class="section-card">
+            <div class="section-title">
+                <span class="icon">🔒</span>
+                <span>4. 关闭订单</span>
+            </div>
+            <div class="section-content">
+                <div class="endpoint"><span class="method post">POST/GET</span> <code>/closeOrder</code></div>
+                <div class="api-table-wrapper">
+                    <table class="api-table">
+                        <thead><tr><th>参数</th><th>类型</th><th>必填</th><th>说明</th></tr></thead>
+                        <tbody>
+                            <tr><td>orderId</td><td>string</td><td><span class="param-required">必传</span></td><td>云端订单号</td></tr>
+                            <tr><td>sign</td><td>string</td><td><span class="param-required">必传</span></td><td>签名：<code>md5(云端订单号 + 通讯密钥)</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <pre>{"code":1,"msg":"成功","data":null}</pre>
+                <p>订单关闭成功则无法继续支付，适用于超时或用户取消场景。</p>
+            </div>
+        </div>
+
+        <!-- 5. 查询服务端状态 -->
+        <div class="section-card">
+            <div class="section-title">
+                <span class="icon">❤️</span>
+                <span>5. 查询网关状态 & 监控端</span>
+            </div>
+            <div class="section-content">
+                <div class="endpoint"><span class="method post">POST/GET</span> <code>/getState</code></div>
+                <div class="api-table-wrapper">
+                    <table class="api-table">
+                        <thead><tr><th>参数</th><th>类型</th><th>必填</th><th>说明</th></tr></thead>
+                        <tbody>
+                            <tr><td>t</td><td>long</td><td><span class="param-required">必传</span></td><td>当前时间戳（毫秒）</td></tr>
+                            <tr><td>sign</td><td>string</td><td><span class="param-required">必传</span></td><td>签名：<code>md5(时间戳 + 通讯密钥)</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <pre>{
+  "code": 1,
+  "msg": "成功",
+  "data": {
+    "lastpay": "1547394640856",
+    "lastheart": "1547613873755",
+    "state": "1"
+  }
+}</pre>
+                <p><strong>state:</strong> 1=在线，0=掉线，-1=未绑定监控端。<br> 
+                <strong>lastpay/lastheart</strong> 均为毫秒时间戳，可辅助监控系统健康度。</p>
+            </div>
+        </div>
+
+        <!-- 6. 回调通知规范 -->
+        <div class="section-card">
+            <div class="section-title">
+                <span class="icon">🔔</span>
+                <span>6. 异步回调 & 同步跳转</span>
+            </div>
+            <div class="section-content">
+                <p>用户支付成功后，系统会向您的<strong>后台设定的异步通知地址</strong>发送<code>GET</code>请求；<br>
+                若创建订单时 <code>isHtml=1</code>，还会同步跳转至您指定的通知页面。</p>
+                <div class="info-block">
+                    <strong>回调参数列表</strong>
+                </div>
+                <div class="api-table-wrapper">
+                    <table class="api-table">
+                        <thead><tr><th>参数</th><th>说明</th></tr></thead>
+                        <tbody>
+                            <tr><td>payId</td><td>商户订单号</td></tr>
+                            <tr><td>param</td><td>自定义透传参数</td></tr>
+                            <tr><td>type</td><td>1微信 2支付宝</td></tr>
+                            <tr><td>price</td><td>订单金额</td></tr>
+                            <tr><td>reallyPrice</td><td>实际支付金额</td></tr>
+                            <tr><td>sign</td><td>校验签名：<code>md5(payId + param + type + price + reallyPrice + 通讯密钥)</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p><strong>处理要求：</strong><br>
+                接收回调后务必重新计算sign比对，验证通过后输出纯文本 <code>success</code>（不含额外字符），系统即停止重试；<br>
+                如返回非success，系统将会间隔重试通知（通常重试5次）。</p>
+                <p><strong>PHP回调示例代码</strong></p>
+                <pre>&lt;?php
+$key = "83d551f0b3609781a22536ca2658473d"; // 您的通讯密钥
+$payId       = $_GET['payId'];
+$param       = $_GET['param'];
+$type        = $_GET['type'];
+$price       = $_GET['price'];
+$reallyPrice = $_GET['reallyPrice'];
+$sign        = $_GET['sign'];
+
+$_sign = md5($payId . $param . $type . $price . $reallyPrice . $key);
+if ($_sign !== $sign) {
+    echo "error_sign";
+    exit;
+}
+
+// 业务逻辑: 更新订单状态，增加流水等
+echo "success";
+?&gt;</pre>
+                <hr>
+                <div class="badge">💡 最佳实践</div>
+                <ul style="margin-top: 12px; margin-left: 1.8rem; color: #334155;">
+                    <li>收到回调后建议先验证签名，再处理幂等逻辑（防止重复通知）</li>
+                    <li>异步回调地址必须直接返回纯文本 <code>success</code>，避免重定向或HTML包裹</li>
+                    <li>推荐在订单创建时记录云端 orderId，便于后续主动查单补偿</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 错误码速查 -->
+        <div class="section-card">
+            <div class="section-title">
+                <span class="icon">⚠️</span>
+                <span>附录：状态码速查</span>
+            </div>
+            <div class="section-content">
+                <div class="api-table-wrapper">
+                    <table class="api-table">
+                        <thead><tr><th>code</th><th>含义</th><th>常见场景</th></tr></thead>
+                        <tbody>
+                            <tr><td>1</td><td>成功/已支付</td><td>创建订单成功、支付查询已支付、回调成功</td></tr>
+                            <tr><td>-1</td><td>通用失败</td><td>参数错误、签名错误、订单不存在、支付未完成</td></tr>
+                            <tr><td>订单状态 state=-1</td><td>订单过期</td><td>超出timeOut未支付，需重新创建</td></tr>
+                            <tr><td>订单状态 state=2</td><td>支付完成但通知失败</td><td>可主动调用查询接口或手工补单</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="info-block" style="margin-top: 10px;">
+                    📌 <strong>签名注意：</strong> 所有拼接参数时，如果字段为空字符串则按空串处理，必须严格按照接口文档顺序拼接（创建订单按 payId+param+type+price+key）。
+                </div>
+            </div>
+        </div>
+
+        <!-- 版本与更新 -->
+        <div class="footer-note">
+            📄 文档版本 1.0 | 最后更新 2026-06-09 | 支付网关标准接口<br>
+            对接中如有疑问请查阅示例或联系技术支持，确保线上交易稳定性。
+        </div>
+    </div>
+</div>
+</body>
+</html>
